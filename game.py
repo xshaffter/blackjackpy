@@ -30,13 +30,25 @@ class Game:
         self.player.take_card(self.deck)
         self.computer.print_fake()
 
-        self.validate_player_win(self.player)
-        result = self.do_player_turn(self.player)
+        pre_win = self.validate_player_win(self.player)
+        if pre_win:
+            print(f"{self.player.name} won! :D")
+            result = TurnType.WIN
+        else:
+            result = self.do_player_turn(self.player)
         if result == TurnType.PASSED:
-            self.validate_player_win(self.computer)
-            self.do_player_turn(self.computer)
+            pre_win = self.validate_player_win(self.computer)
+            if pre_win:
+                print(f"{self.computer.name} won! :D")
+                computer_result = TurnType.WIN
+            else:
+                computer_result = self.do_player_turn(self.computer)
 
-    def do_player_turn(self, player):
+            if computer_result == TurnType.PASSED:
+                print(f"{self.computer.name} won! :D")
+
+
+    def do_player_turn(self, player) -> TurnType:
         print(player)
         while True:
             if player.name != "Computer":
@@ -61,7 +73,7 @@ class Game:
                 return TurnType.WIN
 
     # noinspection PyMethodMayBeStatic
-    def ask_input(self):
+    def ask_input(self) -> str:
         while True:
             inpu = input("¿quieres otra carta? (Y/N)")  # andalu' para "input", pero es una palabra reservada, srry
 
@@ -69,13 +81,12 @@ class Game:
                 break
         return inpu
 
-    # noinspection PyMethodMayBeStatic
-    def computer_input(self):
+    def computer_input(self) -> str:
         this_player = self.computer
         if this_player.get_best_points() > self.player.get_best_points():
             return "N"
 
         return "Y"
 
-    def validate_player_win(self, player):
+    def validate_player_win(self, player) -> bool:
         return 21 in (player.points, player.secondary_points)
